@@ -7,62 +7,54 @@ on:
       - configuration
 
 jobs:
-      configuration: 
-        runs-on: ubuntu-latest
-        if: github.ref_name == 'configure'
-        steps: 
-        - name: "SSH into EC2 instance and Install Docker"
-          run: |
-            echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
-            sudo chmod 400 codeplaykey.pem
-              ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
 
+  configuration:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'configuration'
+    steps:
+      - name: "SSH into EC2 instance and Install Docker"
+        run: |
+          echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
+          sudo chmod 400 codeplaykey.pem
 
-
-            ## install docker 
-            # Add Docker's official GPG key:
+          ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com << 'EOF'
             sudo apt update -y
-            sudo apt install ca-certificates curl -y
+            sudo apt install -y ca-certificates curl
+
             sudo install -m 0755 -d /etc/apt/keyrings
             sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
             sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-            # Add the repository to Apt sources:
-            sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+            sudo tee /etc/apt/sources.list.d/docker.sources <<EOT
             Types: deb
             URIs: https://download.docker.com/linux/ubuntu
             Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
             Components: stable
             Signed-By: /etc/apt/keyrings/docker.asc
-            EOF
+            EOT
 
             sudo apt update -y
-
-            sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+            sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
             docker --version
+          EOF
 
-      build_image:
-      runs-on: ubuntu-latest
-      if: github.ref_name == 'master'
-      steps:
-      - name: List directory before checkout
-        run: ls
+  build_image:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'master'
+    steps:
 
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: |
-          docker build -t 17csc028/codeplay .
+        run: docker build -t 17csc028/codeplay .
 
-      - name: Login to Docker Hub
-        run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Log in to Docker Hub
+        run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
 
-      - name: Push image to Docker Hub
-        run: |
-          docker push 17csc028/codeplay
+      - name: Push Docker image
+        run: docker push 17csc028/codeplay
 
       - name: SSH into EC2 instance
         run: |
