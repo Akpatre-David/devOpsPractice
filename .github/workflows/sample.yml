@@ -1,63 +1,151 @@
-name: "create simple image"
+# name: "create simple image"
 
-on:
-  push:
-    branches:
-      - master
-      - configuration
+# on:
+#   push:
+#     branches:
+#       - master
+#       - configuration
 
-jobs:
+# jobs:
 
-  configuration:
-    runs-on: ubuntu-latest
-    if: github.ref_name == 'configuration'
-    steps:
-      - name: "SSH into EC2 instance and Install Docker"
-        run: |
-          echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
-          sudo chmod 400 codeplaykey.pem
+#   configuration:
+#     runs-on: ubuntu-latest
+#     if: github.ref_name == 'configuration'
+#     steps:
+#       - name: "SSH into EC2 instance and Install Docker"
+#         run: |
+#           echo "${{ secrets.SSH_KEY }}" > codeplaykey.pem
+#           chmod 400 codeplaykey.pem
 
-          ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com << 'EOF'
+#           ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com << 'EOF'
+#             sudo apt update -y
+#             sudo apt install -y ca-certificates curl
+
+#             sudo install -m 0755 -d /etc/apt/keyrings
+#             sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+#             sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+#             # Create Docker repo file
+#             sudo bash -c 'cat > /etc/apt/sources.list.d/docker.sources <<EOT
+# Types: deb
+# URIs: https://download.docker.com/linux/ubuntu
+# Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+# Components: stable
+# Signed-By: /etc/apt/keyrings/docker.asc
+# EOT'
+
+#             sudo apt update -y
+#             sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+#             docker --version
+#           EOF
+
+#   build_image:
+#     runs-on: ubuntu-latest
+#     if: github.ref_name == 'master'
+#     steps:
+
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Build Docker image
+#         run: docker build -t 17csc028/codeplay .
+
+#       - name: Log in to Docker Hub
+#         run: |
+#           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+#       - name: Push Docker image
+#         run: docker push 17csc028/codeplay
+
+#       - name: SSH into EC2 instance
+#         run: |
+#           echo "${{ secrets.SSH_KEY }}" > codeplaykey.pem
+#           chmod 400 codeplaykey.pem
+#           ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
+
+
+
+
+
+
+
+name: "Create simple image"
+on: 
+    push:
+        branches: 
+        - master
+        - configure
+
+jobs: 
+
+    configuration: 
+        runs-on: ubuntu-latest
+        if: github.ref_name == 'configure'
+        steps: 
+        - name: "SSH into EC2 instance and Install Docker"
+          run: |
+            echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
+            sudo chmod 400 codeplaykey.pem
+            ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com "
+
+            ## install docker 
+            # Add Docker's official GPG key:
             sudo apt update -y
-            sudo apt install -y ca-certificates curl
-
+            sudo apt install ca-certificates curl -y
             sudo install -m 0755 -d /etc/apt/keyrings
             sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
             sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-            sudo tee /etc/apt/sources.list.d/docker.sources <<EOT
+            # Add the repository to Apt sources:
+            sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
             Types: deb
             URIs: https://download.docker.com/linux/ubuntu
             Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
             Components: stable
             Signed-By: /etc/apt/keyrings/docker.asc
-            EOT
+            EOF
 
             sudo apt update -y
-            sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+            sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
             docker --version
-          EOF
+            "
 
-  build_image:
-    runs-on: ubuntu-latest
-    if: github.ref_name == 'master'
-    steps:
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t 17csc028/codeplay .
+    build_image: 
+        runs-on: ubuntu-latest
+        if: github.ref_name == 'master'
+        steps: 
+        - name: "List the directory"
+          run: |
+            ls 
 
-      - name: Log in to Docker Hub
-        run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+        - name: "checkout from dir"
+          uses: actions/checkout@v4
 
-      - name: Push Docker image
-        run: docker push 17csc028/codeplay
+        - name: "Build the image"
+          run: |
+            docker build -t 17csc028/codeplay .
+          
+        - name: "Login to Docker Hub"
+          run: |
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: "SSH into EC2 instance"
-        run: |
-          echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
-          chmod 400 codeplaykey.pem
-          ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
+        - name: "Push image to DockerHub"
+          run: |
+            docker push theoafactor/codeplay
+
+        - name: "SSH into the EC2 instance"
+          run: |
+            echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
+            sudo chmod 400 codeplaykey.pem
+            ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
+            
+            sudo docker stop codeplay
+            sudo docker rm --force codeplay
+            sudo docker pull theoafactor/codeplay
+            sudo docker run -d -p 80:80 --name codeplay 17csc028/codeplay
+            "
