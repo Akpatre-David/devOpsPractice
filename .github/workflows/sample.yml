@@ -7,7 +7,6 @@ on:
       - configuration
 
 jobs:
-
   configuration:
     runs-on: ubuntu-latest
     if: github.ref_name == 'configuration'
