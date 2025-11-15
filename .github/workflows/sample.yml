@@ -32,4 +32,7 @@ jobs:
         run: |
           echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
           chmod 400 codeplaykey.pem
-          ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no codeplaykey.pem ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
+          ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
+
+
+# ssh -i "codeplaykey.pem" ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
