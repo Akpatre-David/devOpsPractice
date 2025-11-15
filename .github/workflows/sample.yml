@@ -23,7 +23,7 @@ jobs:
     if: github.ref_name == 'master'
     steps:
       - name: List directory before checkout
-        run: ls -a
+        run: ls
 
       - name: Checkout repository
         uses: actions/checkout@v4
