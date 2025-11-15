@@ -1,4 +1,4 @@
-name: create simple image
+name: "create simple image"
 
 on:
   push:
