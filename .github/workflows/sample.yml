@@ -136,7 +136,7 @@ jobs:
 
         - name: "Push image to DockerHub"
           run: |
-            docker push theoafactor/codeplay
+            docker push 17csc028/codeplay
 
         - name: "SSH into the EC2 instance"
           run: |
@@ -146,6 +146,6 @@ jobs:
             
             sudo docker stop codeplay
             sudo docker rm --force codeplay
-            sudo docker pull theoafactor/codeplay
+            sudo docker pull 17csc028/codeplay
             sudo docker run -d -p 80:80 --name codeplay 17csc028/codeplay
             "
