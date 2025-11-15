@@ -126,7 +126,7 @@ jobs:
         - name: "checkout from dir"
           uses: actions/checkout@v4
 
-        - name: "Build the image"
+        - name: Build the image
           run: |
             docker build -t 17csc028/codeplay .
           
