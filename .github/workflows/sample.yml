@@ -4,11 +4,22 @@ on:
   push:
     branches:
       - master
+      - configuration
 
 jobs:
+ configuration:
+  runs-on: ubuntu-latest
+  if: github.ref_name == 'configuration'
+  steps:
+    - name: SSH into EC2 instance and install docker
+      run: |
+          echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
+          chmod 400 codeplaykey.pem
+          ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
+
   build_image:
     runs-on: ubuntu-latest
-
+    if: github.ref_name == 'master'
     steps:
       - name: List directory before checkout
         run: ls
