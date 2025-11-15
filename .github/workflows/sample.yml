@@ -39,7 +39,7 @@ jobs:
         run: |
           docker push 17csc028/codeplay
 
-      - name: SSH into EC2 instance
+      - name: "SSH into EC2 instance"
         run: |
           echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
           chmod 400 codeplaykey.pem
