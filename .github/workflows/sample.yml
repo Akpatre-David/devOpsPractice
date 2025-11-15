@@ -22,28 +22,28 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref_name == 'master'
     steps:
-      - name: List directory before checkout
+    - name: List directory before checkout
         run: ls
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: |
-          docker build -t 17csc028/codeplay .
+    - name: Build Docker image
+      run: |
+        docker build -t 17csc028/codeplay .
 
-      - name: Login to Docker Hub
-        run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+    - name: Login to Docker Hub
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Push image to Docker Hub
-        run: |
-          docker push 17csc028/codeplay
+    - name: Push image to Docker Hub
+      run: |
+        docker push 17csc028/codeplay
 
-      - name: SSH into EC2 instance
-        run: |
-          echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
-          chmod 400 codeplaykey.pem
-          ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
+    - name: SSH into EC2 instance
+      run: |
+        echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
+        chmod 400 codeplaykey.pem
+        ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
 
-# ssh -i "codeplaykey.pem" ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com
+
