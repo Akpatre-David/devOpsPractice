@@ -102,7 +102,7 @@ jobs:
         runs-on: ubuntu-latest
         if: github.ref_name == 'master'
         steps: 
-        - name: "List the directory"
+        - name: List the directory
           run: |
             ls 
 
