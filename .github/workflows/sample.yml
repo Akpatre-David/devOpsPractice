@@ -70,7 +70,7 @@ jobs:
           run: |
             echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
             sudo chmod 400 codeplaykey.pem
-            ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com "
+            ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-235-148-100.compute-1.amazonaws.com "
 
             ## install docker 
             # Add Docker's official GPG key:
@@ -125,10 +125,12 @@ jobs:
           run: |
             echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
             sudo chmod 400 codeplaykey.pem
-            ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-238-132-160.compute-1.amazonaws.com "
+            ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-235-148-100.compute-1.amazonaws.com "
             
             sudo docker stop codeplay
             sudo docker rm --force codeplay
             sudo docker pull 17csc028/codeplay
             sudo docker run -d -p 80:80 --name codeplay 17csc028/codeplay
             "
+
+            ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-235-148-100.compute-1.amazonaws.com
