@@ -70,7 +70,7 @@ jobs:
           run: |
             echo "${{ secrets.SSH_KEY }}" >> codeplaykey.pem
             sudo chmod 400 codeplaykey.pem
-            ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ubuntu@ec2-3-235-148-100.compute-1.amazonaws.com "
+            ssh -i "codeplaykey.pem" -o StrictHostKeyChecking=no ec2-user@3.238.181.55.compute-1.amazonaws.com "
             
             sudo docker stop codeplay
             sudo docker rm --force codeplay
@@ -78,4 +78,4 @@ jobs:
             sudo docker run -d -p 80:80 --name codeplay 17csc028/codeplay
             "
 
-            
+             

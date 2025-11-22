@@ -1,0 +1,6 @@
+terraform
+terraform.*
+server1
+server1.pub
+.terraform
+.terraform.*
